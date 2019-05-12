@@ -1,0 +1,78 @@
+#profile handle -- integrate code
+
+#update lambda_deploy to add environment variable
+--environment Variables={execute_lambda=True}
+
+#update bucket,app_owner,region,rolename using gitlabci
+#!/bin/bash
+buc_name="mt99"
+region="us-east-1"
+app_owner="GROUP-IT-AWS"
+
+#sed -i 's/bucket_name = ".*"/bucket_name = \"$buc_name\"/' variables.py
+#sed -i 's/bucket_name = ".*"/bucket_name = "$buc_name"/g' variables.py
+
+sed -i "s/^bucket_name = '.*'/bucket_name = \'$buc_name\'/g" variables.py
+sed -i "s/^region = '.*'/region = \'$region\'/g" variables.py
+sed -i "s/^app_owner = '.*'/app_owner = \'$app_owner\'/g" variables.py
+
+#update role name in lambda_deploy.sh
+
+#create dict obj 
+
+ser = {
+'key1' : [{10},{23}],
+'key2' : [],
+'key3' : []
+}
+
+print(ser)
+
+def addDefaultAppOwner(app_owner):
+        new_dict = {app_owner : []}
+        ser.update(new_dict)
+
+addDefaultAppOwner(app_owner)
+
+#all resource copliant
+def checkKeyValueLength(app_owner):
+        length = 10
+        if app_owner in ser:
+                print('hi')
+                length = len(ser[app_owner])
+        else:
+                print('ho')
+
+        return length
+
+
+#send notification on file upload
+def generateNotifyMailContent(buc_path):
+        str = ""
+        str+= "      Compliance Report Generated and Uploaded to %s Bucket.\n" %bucket_name
+        str+= "_______________________________________________________________________________\n\n"
+
+        str+="  Checker Execution Time : %s\n\n" %cur_date
+        str+="  Non Compliance Report Path : %s\n\n" %non_compliant_path
+        str+="  Compliance Report Path : %s" %compliant_path
+
+        return str
+
+
+
+
+
+
+Ansible :
+#check topic exists
+
+topic_name=$1
+res=`aws sns list-topics | grep -w "$topic_name" | tr -d ' ' | tr -d '"' | cut -d ':' -f7`
+echo $topic_name
+echo $res
+
+if [ x$topic_name == x$res ]; then
+        echo "exists"
+else
+        echo "not_exists"
+fi
